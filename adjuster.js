@@ -159,7 +159,7 @@ const wakuwakuMaster = {
     for (const pattern of patterns) {
       const { wakuwakuList, totalValue, totalSpeed } = pattern;
       const text = `パターン${patternCount += 1}: ${wakuwakuList.join('と')}で合計${totalValue}増加します。スピード: ${totalSpeed}`;
-      const h3Element = document.createElement("h3");
+      const h3Element = document.createElement("h5");
       h3Element.textContent = text;
       resultElement.appendChild(h3Element);
     }
@@ -170,7 +170,7 @@ const wakuwakuMaster = {
     for (const pattern of inElPatterns) {
       const { wakuwakuList, totalValue, totalSpeed } = pattern;
       const text = `パターン${elpatternCount += 1}: ${wakuwakuList}合計${totalValue}増加します。スピード: ${totalSpeed}`;
-      const h3Element = document.createElement("h3");
+      const h3Element = document.createElement("h5");
       h3Element.textContent = text;
       resultElement.appendChild(h3Element);
     }
