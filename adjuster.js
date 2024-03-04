@@ -39,21 +39,78 @@ const wakuwakuMaster = {
   
   const adjustSpeed = (speed) => {
     const patterns = [];
-    for (const key in wakuwakuMaster) {
-      const value = wakuwakuMaster[key];
-      for (let i = 1; i <= 3; i++) {
-        if (speed + i * value >= 417.5 && speed + i * value <= 421) {
+  
+    // wakuwakuMasterのkeyをすべてリストに格納
+    const keys = Object.keys(wakuwakuMaster);
+  
+    // 1つ選択
+    for (const key1 of keys) {
+      const value1 = wakuwakuMaster[key1];
+      const totalValue1 = value1;
+      const totalSpeed1 = speed + totalValue1;
+  
+      // 417.5〜421に収まる場合、パターンに追加
+      if (totalSpeed1 >= 417.5 && totalSpeed1 <= 421) {
+        patterns.push({
+          wakuwakuList: [key1],
+          totalValue: totalValue1,
+          totalSpeed: totalSpeed1,
+        });
+      }
+  
+      // 2つ選択
+      for (const key2 of keys) {
+        if (key1 === key2) {
+          continue;
+        }
+        const value2 = wakuwakuMaster[key2];
+        const totalValue2 = value1 + value2;
+        const totalSpeed2 = speed + totalValue2;
+  
+        // 417.5〜421に収まる場合、パターンに追加
+        if (totalSpeed2 >= 417.5 && totalSpeed2 <= 421) {
           patterns.push({
-            key,
-            value,
-            count: i,
-            totalValue: i * value,
-            totalSpeed: speed + i * value,
+            wakuwakuList: [key1, key2],
+            totalValue: totalValue2,
+            totalSpeed: totalSpeed2,
           });
+        }
+  
+        // 3つ選択
+        for (const key3 of keys) {
+          if (key1 === key3 || key2 === key3) {
+            continue;
+          }
+          const value3 = wakuwakuMaster[key3];
+          const totalValue3 = value1 + value2 + value3;
+          const totalSpeed3 = speed + totalValue3;
+  
+          // 417.5〜421に収まる場合、パターンに追加
+          if (totalSpeed3 >= 417.5 && totalSpeed3 <= 421) {
+            patterns.push({
+              wakuwakuList: [key1, key2, key3],
+              totalValue: totalValue3,
+              totalSpeed: totalSpeed3,
+            });
+          }
         }
       }
     }
-    return patterns.sort((a, b) => a.count - b.count);
+  
+    // パターンをkeyでソート
+    patterns.sort((a, b) => a.wakuwakuList.join(",") < b.wakuwakuList.join(","));
+  
+    // 重複を除去
+    const uniquePatterns = [];
+    for (const pattern of patterns) {
+      const key = pattern.wakuwakuList.join(",");
+      if (!uniquePatterns.some(p => p.wakuwakuList.join(",") === key)) {
+        uniquePatterns.push(pattern);
+      }
+    }
+    uniquePatterns.sort((a, b) => a.wakuwakuList.length - b.wakuwakuList.length);
+
+    return uniquePatterns;
   };
   
   const updateResult = (patterns) => {
@@ -63,10 +120,10 @@ const wakuwakuMaster = {
       resultElement.innerHTML = "<p>調整可能なパターンが見つかりませんでした</p>";
       return;
     }
-  
+    let patternCount = 0
     for (const pattern of patterns) {
-      const { key, value, count, totalValue, totalSpeed } = pattern;
-      const text = `パターン${count}: ${key}を${count}、合計${totalValue}増加します。Speed: ${totalSpeed}`;
+      const { wakuwakuList, totalValue, totalSpeed } = pattern;
+      const text = `パターン${patternCount += 1}: ${wakuwakuList}<br>合計${totalValue}増加します。<br>スピード: ${totalSpeed}`;
       const h2Element = document.createElement("h3");
       h2Element.textContent = text;
       resultElement.appendChild(h2Element);
