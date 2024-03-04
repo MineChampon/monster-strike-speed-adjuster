@@ -39,6 +39,7 @@ const wakuwakuMaster = {
   
   const adjustSpeed = (speed) => {
     const patterns = [];
+    const inElPatterns = [];
   
     // wakuwakuMasterのkeyをすべてリストに格納
     const keys = Object.keys(wakuwakuMaster);
@@ -51,11 +52,19 @@ const wakuwakuMaster = {
   
       // 417.5〜421に収まる場合、パターンに追加
       if (totalSpeed1 >= 417.5 && totalSpeed1 <= 421) {
-        patterns.push({
-          wakuwakuList: [key1],
-          totalValue: totalValue1,
-          totalSpeed: totalSpeed1,
-        });
+        if (key1.includes("EL")) {
+          inElPatterns.push({
+            wakuwakuList: [key1],
+            totalValue: totalValue1,
+            totalSpeed: totalSpeed1,
+          });
+        } else {
+          patterns.push({
+            wakuwakuList: [key1],
+            totalValue: totalValue1,
+            totalSpeed: totalSpeed1,
+          });
+        }
       }
   
       // 2つ選択
@@ -69,11 +78,19 @@ const wakuwakuMaster = {
   
         // 417.5〜421に収まる場合、パターンに追加
         if (totalSpeed2 >= 417.5 && totalSpeed2 <= 421) {
-          patterns.push({
-            wakuwakuList: [key1, key2],
-            totalValue: totalValue2,
-            totalSpeed: totalSpeed2,
-          });
+          if (key1.includes("EL") || key2.includes("EL")) {
+            inElPatterns.push({
+              wakuwakuList: [key1, key2],
+              totalValue: totalValue2,
+              totalSpeed: totalSpeed2,
+            });
+          } else {
+            patterns.push({
+              wakuwakuList: [key1, key2],
+              totalValue: totalValue2,
+              totalSpeed: totalSpeed2,
+            });
+          }
         }
   
         // 3つ選択
@@ -87,11 +104,19 @@ const wakuwakuMaster = {
   
           // 417.5〜421に収まる場合、パターンに追加
           if (totalSpeed3 >= 417.5 && totalSpeed3 <= 421) {
-            patterns.push({
-              wakuwakuList: [key1, key2, key3],
-              totalValue: totalValue3,
-              totalSpeed: totalSpeed3,
-            });
+            if (key1.includes("EL") || key2.includes("EL") || key3.includes("EL")) {
+              inElPatterns.push({
+                wakuwakuList: [key1, key2, key3],
+                totalValue: totalValue3,
+                totalSpeed: totalSpeed3,
+              });
+            } else {
+              patterns.push({
+                wakuwakuList: [key1, key2, key3],
+                totalValue: totalValue3,
+                totalSpeed: totalSpeed3,
+              });
+            }
           }
         }
       }
@@ -99,6 +124,7 @@ const wakuwakuMaster = {
   
     // パターンをkeyでソート
     patterns.sort((a, b) => a.wakuwakuList.join(",") < b.wakuwakuList.join(","));
+    inElPatterns.sort((a, b) => a.wakuwakuList.join(",") < b.wakuwakuList.join(","));
   
     // 重複を除去
     const uniquePatterns = [];
@@ -108,36 +134,56 @@ const wakuwakuMaster = {
         uniquePatterns.push(pattern);
       }
     }
-    uniquePatterns.sort((a, b) => a.wakuwakuList.length - b.wakuwakuList.length);
-
-    return uniquePatterns;
+    const uniqueInElPatterns = [];
+    for (const pattern of inElPatterns) {
+      const key = pattern.wakuwakuList.join(",");
+      if (!uniqueInElPatterns.some(p => p.wakuwakuList.join(",") === key)) {
+        uniqueInElPatterns.push(pattern);
+      }
+    }
+  
+    return [uniquePatterns, uniqueInElPatterns];
   };
   
-  const updateResult = (patterns) => {
+  const updateResult = (patterns, inElPatterns) => {
     const resultElement = document.getElementById("result");
     resultElement.innerHTML = "";
-    if (patterns.length === 0) {
+    if (patterns.length === 0 || inElPatterns.length === 0) {
       resultElement.innerHTML = "<p>調整可能なパターンが見つかりませんでした</p>";
       return;
     }
+    const h2Element = document.createElement("h2");
+    h2Element.textContent = 'ELなし';
+    resultElement.appendChild(h2Element);
     let patternCount = 0
     for (const pattern of patterns) {
       const { wakuwakuList, totalValue, totalSpeed } = pattern;
-      const text = `パターン${patternCount += 1}: ${wakuwakuList}<br>合計${totalValue}増加します。<br>スピード: ${totalSpeed}`;
-      const h2Element = document.createElement("h3");
-      h2Element.textContent = text;
-      resultElement.appendChild(h2Element);
+      const text = `パターン${patternCount += 1}: ${wakuwakuList.join('と')}で合計${totalValue}増加します。スピード: ${totalSpeed}`;
+      const h3Element = document.createElement("h3");
+      h3Element.textContent = text;
+      resultElement.appendChild(h3Element);
+    }
+    const elh2Element = document.createElement("h2");
+    elh2Element.textContent = 'ELあり';
+    resultElement.appendChild(elh2Element);
+    let elpatternCount = 0
+    for (const pattern of inElPatterns) {
+      const { wakuwakuList, totalValue, totalSpeed } = pattern;
+      const text = `パターン${elpatternCount += 1}: ${wakuwakuList}合計${totalValue}増加します。スピード: ${totalSpeed}`;
+      const h3Element = document.createElement("h3");
+      h3Element.textContent = text;
+      resultElement.appendChild(h3Element);
     }
   };
   
   const speedInput = document.getElementById("speed");
   speedInput.addEventListener("input", () => {
     const speed = parseFloat(speedInput.value);
-    const patterns = adjustSpeed(speed);
-    updateResult(patterns);
+    const pat = adjustSpeed(speed);
+    updateResult(pat[0], pat[1]);
   });
   
   const initialSpeed = speedInput.value;
-  const patterns = adjustSpeed(initialSpeed);
-  updateResult(patterns);
+  const pat = adjustSpeed(initialSpeed);
+  updateResult(pat[0], pat[1]);
   
