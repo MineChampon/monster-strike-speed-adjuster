@@ -42,7 +42,7 @@ const wakuwakuMaster = {
     for (const key in wakuwakuMaster) {
       const value = wakuwakuMaster[key];
       for (let i = 1; i <= 3; i++) {
-        if (speed + i * value >= 417 && speed + i * value <= 421) {
+        if (speed + i * value >= 417.5 && speed + i * value <= 421) {
           patterns.push({
             key,
             value,
