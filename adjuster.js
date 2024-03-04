@@ -183,6 +183,13 @@ const wakuwakuMaster = {
     updateResult(pat[0], pat[1]);
   });
   
+  // エンターキー無効化
+  speedInput.addEventListener("keydown", (event) => {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+    }
+  });
+    
   const initialSpeed = speedInput.value;
   const pat = adjustSpeed(initialSpeed);
   updateResult(pat[0], pat[1]);
