@@ -77,7 +77,7 @@ const wakuwakuMaster = {
         const totalSpeed2 = speed + totalValue2;
   
         // 417.5〜421に収まる場合、パターンに追加
-        if (totalSpeed2 >= 417.5 && totalSpeed2 <= 421) {
+        if (totalSpeed2 >= 417.2 && totalSpeed2 <= 421.93) {
           if (key1.includes("EL") || key2.includes("EL")) {
             inElPatterns.push({
               wakuwakuList: [key1, key2],
