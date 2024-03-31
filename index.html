@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>モンスト闇ノマ1手目スピード調整</title>
   <!-- <link rel="stylesheet" href="style.css"> -->
+  <style>
+    .toggle-button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <h1>モンスト闇ノマ1手目スピード調整</h1>
@@ -12,8 +21,8 @@
     <label for="speed">スピードを入力してください ※半角数値で!：</label>
     <input type="number" id="speed" name="speed" step=".01" required>
   </form>
-  <div id="result"></div>
-  <table id="wakuwakuMaster">
+  <button class="toggle-button">【加速の実一覧】開く/閉じる</button>
+  <table id="wakuwakuMaster" class="hidden">
     <thead>
       <tr>
         <th>実のなまえ</th>
@@ -87,7 +96,16 @@
       </tr>
     </tbody>
   </table>
+  <div id="result"></div>
+  <script src="./wakuwakuSpeedMaster.js"></script>
+  <script src="./adjustSpeed.js"></script>
   <script src="./adjuster.js"></script>
+  <script>
+    document.querySelector('.toggle-button').addEventListener('click', () => {
+      const table = document.getElementById('wakuwakuMaster');
+      table.classList.toggle('hidden');
+    });
+  </script>
   <h2>バグ報告はよしちゃぽにください</h2>
 </body>
 </html>
